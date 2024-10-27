@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesan Sekarang - SuruhAja</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 400px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <section id="order">
+        <h2>Pesan Sekarang</h2>
+
+        <div id="map"></div>
+
+        <form action="order.php" method="POST">
+            <label for="service">Pilih Layanan:</label>
+            <select id="service" name="service" required>
+                <option value="Antar Jemput">Antar Jemput</option>
+                <option value="Belanja dan Pembelian">Belanja dan Pembelian</option>
+            </select>
+
+            <label for="order_date">Tanggal Pemesanan:</label>
+            <input type="date" id="order_date" name="order_date" required>
+
+            <label for="order_time">Jam Pemesanan:</label>
+            <input type="time" id="order_time" name="order_time" required>
+
+            <label for="instructions">Instruksi atau Pesan Tambahan:</label>
+            <textarea id="instructions" name="instructions" rows="4" required></textarea>
+
+            <label for="address">Alamat:</label>
+            <input type="text" id="address" name="address" readonly required>
+
+            <button type="submit">Pesan</button>
+        </form>
+
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var map = L.map('map').setView([-6.200000, 106.816666], 13); // Koordinat Jakarta
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                var marker = L.marker([-6.200000, 106.816666], { draggable: true }).addTo(map);
+
+                marker.on('dragend', function (e) {
+                    var latlng = marker.getLatLng();
+                    var lat = latlng.lat;
+                    var lng = latlng.lng;
+
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById('address').value = data.display_name;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Gagal mendapatkan alamat, coba lagi.');
+                        });
+                });
+            });
+        </script>
+    </section>
+</body>
+</html>
