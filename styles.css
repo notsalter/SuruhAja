@@ -1,0 +1,199 @@
+/* Reset margin dan padding untuk semua elemen */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+}
+
+/* Header Styling */
+header {
+    background-color: transparent;
+    color: #f4f4f4;
+    padding: 10px 0;
+}
+
+header .logo span {
+    font-family: "Expletus Sans", sans-serif; /* Menggunakan font yang lebih unik */
+    font-size: 50px;
+    color: #683ce1a1; /* Warna biru */
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-left: 20px;
+}
+
+header nav ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    padding: 0;
+}
+
+nav ul li {
+    position: relative;
+}
+
+header nav ul li a {
+    text-decoration: none;
+    color: #333; /* Warna teks default */
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 10px;
+    transition: color 0.3s ease; /* Transisi untuk warna teks */
+}
+
+/* Efek garis di bawah menu item saat hover */
+header nav ul li a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 7px;
+    border-radius: 10px;
+    background-color: grey;
+    transition: width 0.5s ease-in-out; /* Transisi halus untuk melebar */
+}
+
+header nav ul li a:hover {
+    color: #333;
+}
+
+header nav ul li a:hover::after {
+    width: 100%; /* Garis akan melebar sepanjang lebar item */
+}
+
+/* Section Styling */
+section {
+    padding: 60px 20px;
+    margin-bottom: 40px;
+    background-color: #f4f4f4;
+}
+
+/* Service Section Styling */
+#services .service {
+    display: inline-block;
+    width: 45%;
+    margin: 20px;
+    text-align: center;
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+#services .service img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: #444; /* Efek bayangan */
+}
+
+/* Form Styling */
+form {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+form input,
+form textarea,
+form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+form button {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #555;
+}
+
+/* Footer Styling */
+footer {
+    background-color: #333;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+}
+
+footer .social-media {
+    margin-top: 10px;
+}
+
+footer .social-media a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+footer .social-media a:hover {
+    text-decoration: underline;
+}
+
+/* Button Styling */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    margin-top: 20px;
+}
+
+.btn:hover {
+    background-color: #555;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #007bff;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Efek hover pada section */
+section {
+    transition: transform 0.5s ease; /* Efek transisi */
+}
+
+section:hover {
+    z-index: 1; /* Menjaga section yang dihover di atas section lainnya */
+}
