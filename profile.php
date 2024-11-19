@@ -89,7 +89,6 @@ $conn->close();
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="order.php">Pesan Sekarang</a></li>
-                        <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
                         <!-- Dropdown untuk profil dan logout -->
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
