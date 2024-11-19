@@ -97,6 +97,7 @@ $conn->close();
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="userMenu">
                                 <li><a class="dropdown-item" href="profile.php">Profil</a></li>
+                                <li><a class="dropdown-item" href="dashboard.php">Dashboard</a></li>
                                 <li><a class="dropdown-item" href="logout.php">Logout</a></li>
                             </ul>
                         </div>

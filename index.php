@@ -15,12 +15,14 @@ $is_logged_in = isset($_SESSION['username']);
     <meta name="keywords" content="jasa suruh pribadi, jasa antar jemput, jasa belanja, layanan cepat, SuruhAja">
     <meta name="author" content="SuruhAja">
     <title>SuruhAja - Jasa Suruh Pribadi Serba Guna</title>
-    
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    
+    <style>
+        .navbar-nav .nav-link, .dropdown-item {
+            font-size: 1rem;
+        }
+    </style>
 </head>
 
 <body>
@@ -46,13 +48,17 @@ $is_logged_in = isset($_SESSION['username']);
                         <li class="nav-item">
                             <a class="nav-link" href="order.php">Pesan Sekarang</a>
                         </li>
+
                         <?php if ($is_logged_in): ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="dashboard.php">Dashboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="logout.php">Logout</a>
-                            </li>
+                            <div class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Hi, <?php echo htmlspecialchars($_SESSION['username']); ?>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="userMenu">
+                                    <li><a class="dropdown-item" href="profile.php">Profil</a></li>
+                                    <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                                </ul>
+                            </div>
                         <?php else: ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="login.php">Login</a>
@@ -120,5 +126,4 @@ $is_logged_in = isset($_SESSION['username']);
     <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
