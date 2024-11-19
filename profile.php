@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($new_password)) {
         // Update tanpa mengganti password
         $stmt = $conn->prepare("UPDATE users SET name = ?, email = ?, phone = ? WHERE id = ?");
-        $stmt->bind_param("ssi", $new_name, $new_email, $new_phone, $user_id);
+        $stmt->bind_param("ssii", $new_name, $new_email, $new_phone, $user_id);
     } else {
         // Update dengan password baru
         $hashed_password = password_hash($new_password, PASSWORD_DEFAULT); // Hash password for security
@@ -38,9 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($stmt->execute()) {
-        echo "Profil berhasil diperbarui.";
+        $message = "Profil berhasil diperbarui.";
     } else {
-        echo "Gagal memperbarui profil: " . $stmt->error;
+        $message = "Gagal memperbarui profil: " . $stmt->error;
     }
 
     $stmt->close();
@@ -70,6 +70,11 @@ $conn->close();
     <title>Profil - SuruhAja</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .navbar-nav .nav-link, .dropdown-item {
+            font-size: 1rem;
+        }
+    </style>
 </head>
 
 <body>
@@ -85,7 +90,16 @@ $conn->close();
                         <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="order.php">Pesan Sekarang</a></li>
                         <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
+                        <!-- Dropdown untuk profil dan logout -->
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Hi, <?php echo htmlspecialchars($user['name']); ?>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="userMenu">
+                                <li><a class="dropdown-item" href="profile.php">Profil</a></li>
+                                <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                            </ul>
+                        </div>
                     </ul>
                 </div>
             </div>
@@ -105,7 +119,7 @@ $conn->close();
             </div>
             <div class="mb-3">
                 <label for="phone" class="form-label">Nomor Telepon:</label>
-                <input type="phone" id="phone" name="phone" class="form-control" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
+                <input type="text" id="phone" name="phone" class="form-control" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Password Baru:</label>
