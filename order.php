@@ -16,6 +16,9 @@ if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
 }
 
+// Ambil user_id dari sesi
+$user_id = $_SESSION['user_id'];
+
 // Jika form disubmit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_SESSION['user_id'];
@@ -77,6 +80,9 @@ $conn->close();
             margin-top: 20px;
             width: 100%;
         }
+        .navbar-nav .nav-link, .dropdown-item {
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -93,8 +99,16 @@ $conn->close();
                         <li class="nav-item"><a class="nav-link" href="index.php#about">Tentang Kami</a></li>
                         <li class="nav-item"><a class="nav-link" href="index.php#services">Layanan</a></li>
                         <li class="nav-item"><a class="nav-link" href="order.php">Pesan Sekarang</a></li>
-                        <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
+                        <div class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Hi, <?php echo htmlspecialchars($_SESSION['username']); ?>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="userMenu">
+                                    <li><a class="dropdown-item" href="profile.php">Profil</a></li>
+                                    <li><a class="dropdown-item" href="dashboard.php">Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                                </ul>
+                        </div>
                     </ul>
                 </div>
             </div>
