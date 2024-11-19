@@ -36,6 +36,12 @@ $conn->close();
     <title>Dashboard Pengguna - SuruhAja</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .table thead th {
+            background-color: #333;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <header>
