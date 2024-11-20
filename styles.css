@@ -7,7 +7,7 @@
 
 /* Body Styling */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif; /* Pastikan konsistensi font */
     line-height: 1.6;
     background-color: #f4f4f4;
 }
@@ -15,67 +15,35 @@ body {
 /* Header Styling */
 header {
     background-color: transparent;
-    color: #f4f4f4;
-    padding: 10px 0;
 }
 
+/* Styling untuk logo aplikasi di sebelah kiri */
 header .logo span {
-    font-family: "Expletus Sans", sans-serif; /* Menggunakan font yang lebih unik */
+    font-family: "Expletus Sans", sans-serif; /* Font untuk logo */
     font-size: 50px;
-    color: #683ce1a1; /* Warna biru */
+    color: #683ce1a1; /* Warna logo */
     font-weight: bold;
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin-left: 20px;
 }
 
-header nav ul {
-    list-style-type: none;
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    padding: 0;
+/* Navigasi - memastikan konsistensi antara navbar dan dropdown */
+.navbar-nav .nav-link,
+.dropdown-item {
+    font-size: 1rem; /* Ukuran font yang sama untuk nav-link dan dropdown-item */
+    font-family: 'Poppins', sans-serif; /* Font yang sama */
 }
 
-nav ul li {
-    position: relative;
-}
-
-header nav ul li a {
-    text-decoration: none;
-    color: #333; /* Warna teks default */
-    font-size: 1.5em;
-    font-weight: bold;
-    padding: 10px;
-    transition: color 0.3s ease; /* Transisi untuk warna teks */
-}
-
-/* Efek garis di bawah menu item saat hover */
-header nav ul li a::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 7px;
-    border-radius: 10px;
-    background-color: grey;
-    transition: width 0.5s ease-in-out; /* Transisi halus untuk melebar */
-}
-
-header nav ul li a:hover {
-    color: #333;
-}
-
-header nav ul li a:hover::after {
-    width: 100%; /* Garis akan melebar sepanjang lebar item */
+/* Header Styling untuk Navbar */
+.navbar {
+    padding: 10px 0; /* Add padding for the navbar */
 }
 
 /* Section Styling */
 section {
     padding: 60px 20px;
     margin-bottom: 40px;
-    background-color: #f4f4f4;
+    background-color: #f4f4f4; /* Warna latar untuk section */
 }
 
 /* Service Section Styling */
@@ -93,17 +61,16 @@ section {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
-    box-shadow: #444; /* Efek bayangan */
 }
 
 /* Form Styling */
 form {
     max-width: 600px;
     margin: 0 auto;
-    background-color: #f4f4f4;
+    background-color: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 form input,
@@ -173,15 +140,14 @@ table {
     margin-top: 20px;
 }
 
-th,
-td {
+th, td {
     border: 1px solid #ddd;
     padding: 12px;
     text-align: left;
 }
 
 th {
-    background-color: #007bff;
+    background-color: #007bff; /* Warna header tabel */
     color: white;
 }
 

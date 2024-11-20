@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('Asia/Jakarta');
+
 // Mulai sesi untuk autentikasi pengguna
 session_start();
 if (!isset($_SESSION['username'])) {
@@ -36,6 +38,15 @@ $conn->close();
     <title>Dashboard Pengguna - SuruhAja</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .table thead th {
+            background-color: #333;
+            color: white;
+        }
+        .navbar-nav .nav-link, .dropdown-item {
+            font-size: 1rem;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -51,8 +62,15 @@ $conn->close();
                         <li class="nav-item"><a class="nav-link" href="index.php#about">Tentang Kami</a></li>
                         <li class="nav-item"><a class="nav-link" href="index.php#services">Layanan</a></li>
                         <li class="nav-item"><a class="nav-link" href="order.php">Pesan Sekarang</a></li>
-                        <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Hi, <?php echo htmlspecialchars($_SESSION['username']); ?>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="userMenu">
+                                <li><a class="dropdown-item" href="profile.php">Profil</a></li>
+                                <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                            </ul>
+                        </div>
                     </ul>
                 </div>
             </div>
