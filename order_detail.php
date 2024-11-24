@@ -6,11 +6,12 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
+// Cek apakah parameter 'id' ada di URL dan valid
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     die("ID pesanan tidak ditemukan di URL.");
 }
 
-$order_id = intval($_GET['id']);
+$order_id = intval($_GET['id']); // Pastikan ID adalah integer
 
 // Koneksi ke database
 $conn = new mysqli("localhost", "root", "Seychelles84", "suruhaja");
@@ -20,15 +21,19 @@ if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
 }
 
-$stmt = $conn->prepare("SELECT service_name, order_date, order_time, status, address, latitude, longitude, instructions FROM orders WHERE id = ?");
-$stmt->bind_param("i", $order_id);
+// Ambil user_id dari sesi
+$user_id = $_SESSION['user_id'];
+
+// Gunakan prepared statement untuk memeriksa kepemilikan pesanan
+$stmt = $conn->prepare("SELECT service_name, order_date, order_time, status, address, latitude, longitude, instructions FROM orders WHERE id = ? AND user_id = ?");
+$stmt->bind_param("ii", $order_id, $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $order = $result->fetch_assoc();
 } else {
-    die("Pesanan dengan ID $order_id tidak ditemukan.");
+    die("Pesanan dengan ID $order_id tidak ditemukan atau akses ditolak.");
 }
 
 $stmt->close();
@@ -46,12 +51,8 @@ $conn->close();
     <style>
         #map {
             height: 400px;
-            width: 80%;
-            margin: 20px auto;
-            border-radius: 8px;
-        }
-        .order-details {
-            margin-top: 30px;
+            width: 100%;
+            margin: 20px 0;
         }
     </style>
 </head>
@@ -99,7 +100,7 @@ $conn->close();
     <?php
     // Handle order completion
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['complete_order'])) {
-        $order_id = intval($_POST['order_id']);
+        $order_id = intval($_POST['order_id']); // Get the order ID from POST
 
         // Database connection
         $conn = new mysqli("localhost", "root", "Seychelles84", "suruhaja");
