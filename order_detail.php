@@ -24,7 +24,7 @@ if ($conn->connect_error) {
 // Ambil user_id dari sesi
 $user_id = $_SESSION['user_id'];
 
-// Gunakan prepared statement untuk memeriksa kepemilikan pesanan
+// Gunakan prepared statement untuk mencegah SQL injection
 $stmt = $conn->prepare("SELECT service_name, order_date, order_time, status, address, latitude, longitude, instructions FROM orders WHERE id = ? AND user_id = ?");
 $stmt->bind_param("ii", $order_id, $user_id);
 $stmt->execute();
@@ -34,6 +34,38 @@ if ($result->num_rows > 0) {
     $order = $result->fetch_assoc();
 } else {
     die("Pesanan dengan ID $order_id tidak ditemukan atau akses ditolak.");
+}
+
+// Handle ulasan
+$message = ""; // Pesan notifikasi
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
+    $user_id = $_SESSION['user_id'];
+    $rating = intval($_POST['rating']);
+    $comment = $_POST['comment'];
+
+    $stmt = $conn->prepare("INSERT INTO reviews (order_id, user_id, rating, comment) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("iiis", $order_id, $user_id, $rating, $comment);
+
+    if ($stmt->execute()) {
+        $message = "Ulasan berhasil ditambahkan.";
+    } else {
+        $message = "Gagal menambahkan ulasan: " . $stmt->error;
+    }
+
+    $stmt->close();
+}
+
+// Ambil semua ulasan terkait untuk pesanan ini
+$stmt = $conn->prepare("SELECT rating, comment FROM reviews WHERE order_id = ?");
+$stmt->bind_param("i", $order_id);
+$stmt->execute();
+$reviewResult = $stmt->get_result();
+
+$reviews = [];
+if ($reviewResult->num_rows > 0) {
+    while ($review = $reviewResult->fetch_assoc()) {
+        $reviews[] = $review; // Menyimpan ulasan ke array
+    }
 }
 
 $stmt->close();
@@ -95,36 +127,42 @@ $conn->close();
         </div>
 
         <div id="map"></div>
+
+        <!-- Form untuk ulasan hanya jika tidak ada ulasan sebelumnya -->
+        <h3 class="mt-5">Ulasan Pengguna</h3>
+        
+        <?php if (count($reviews) > 0): ?>
+            <div class="list-group">
+                <?php foreach ($reviews as $review): ?>
+                    <div class="list-group-item">
+                        <strong>Rating: <?php echo htmlspecialchars($review['rating']); ?></strong><br>
+                        <p><?php echo htmlspecialchars($review['comment']); ?></p>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <form action="order_detail.php?id=<?php echo $order_id; ?>" method="POST">
+                <div class="mb-3">
+                    <label for="rating" class="form-label">Rating:</label>
+                    <select id="rating" name="rating" class="form-select" required>
+                        <option value="">Pilih Rating</option>
+                        <option value="1">1 - Sangat Buruk</option>
+                        <option value="2">2 - Buruk</option>
+                        <option value="3">3 - Cukup</option>
+                        <option value="4">4 - Baik</option>
+                        <option value="5">5 - Sangat Baik</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="comment" class="form-label">Komentar:</label>
+                    <textarea id="comment" name="comment" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <button type="submit" name="submit_review" class="btn btn-primary">Kirim Ulasan</button>
+            </form>
+        <?php endif; ?>
     </section>
-
-    <?php
-    // Handle order completion
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['complete_order'])) {
-        $order_id = intval($_POST['order_id']); // Get the order ID from POST
-
-        // Database connection
-        $conn = new mysqli("localhost", "root", "Seychelles84", "suruhaja");
-
-        // Check connection
-        if ($conn->connect_error) {
-            die("Koneksi gagal: " . $conn->connect_error);
-        }
-
-        // Proses selesaikan order
-        $stmt = $conn->prepare("UPDATE orders SET status = 'Selesai' WHERE id = ?");
-        $stmt->bind_param("i", $order_id);
-
-        if ($stmt->execute()) {
-            header("Location: dashboard.php");
-            exit();
-        } else {
-            die("Gagal menyelesaikan pesanan: " . $stmt->error);
-        }
-
-        $stmt->close();
-        $conn->close();
-    }
-    ?>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
