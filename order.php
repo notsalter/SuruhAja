@@ -16,12 +16,12 @@ if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
 }
 
-// Ambil user_id dari sesi
+// Ambil user_id dan email dari sesi
 $user_id = $_SESSION['user_id'];
+$email = $_SESSION['email']; // Pastikan email disimpan dalam sesi saat login
 
 // Jika form disubmit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user_id = $_SESSION['user_id'];
     $service = $_POST['service'];
     $order_date = date('Y-m-d');
     $order_time = date('H:i:s');
@@ -29,15 +29,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $latitude = $_POST['latitude'] ?? NULL;
     $longitude = $_POST['longitude'] ?? NULL;
     $address = $_POST['address'];
+    $gross_amount = $_POST['gross_amount']; // Ambil harga dari input
 
+    // Simpan order ke database
     $stmt = $conn->prepare("INSERT INTO orders (user_id, service_name, order_date, order_time, instructions, latitude, longitude, address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Proses')");
     $stmt->bind_param("issssdds", $user_id, $service, $order_date, $order_time, $instructions, $latitude, $longitude, $address);
 
     if ($stmt->execute()) {
-        header("Location: dashboard.php");
-        exit();
+        // Ambil ID order yang baru saja dibuat
+        $order_id = $stmt->insert_id;
+
+        // Konfigurasi Midtrans
+        require 'vendor/autoload.php'; // Pastikan path ini sesuai dengan lokasi autoload.php Anda
+        \Midtrans\Config::$serverKey = 'SB-Mid-server-Y_CLq_xm4dwRbb0xQquJVGv1'; // Ganti dengan server key Anda
+        \Midtrans\Config::$isProduction = false; // Set ke true jika Anda ingin menggunakan mode produksi
+
+        // Buat transaksi
+        $transaction_details = [
+            'order_id' => $order_id,
+            'gross_amount' => (int)$gross_amount, // Gunakan harga yang dikirim dari form
+            'redirect_url' => 'dashboard.php' // Ganti dengan URL yang diinginkan
+        ];
+
+        $item_details = [
+            [
+                'id' => 'item1',
+                'price' => (int)$gross_amount, // Gunakan harga yang dikirim dari form
+                'quantity' => 1,
+                'name' => $service,
+            ],
+        ];
+
+        $customer_details = [
+            'first_name' => $_SESSION['username'],
+            'email' => $email, // Menggunakan email dari sesi
+        ];
+
+        $transaction_data = [
+            'transaction_details' => $transaction_details,
+            'item_details' => $item_details,
+            'customer_details' => $customer_details,
+        ];
+
+        // Dapatkan URL Snap
+        $snapToken = \Midtrans\Snap::getSnapToken($transaction_data);
+        
+        // Kirim token ke halaman untuk memunculkan pop-up
+        echo json_encode(['snapToken' => $snapToken]);
+        exit(); // Pastikan exit di sini untuk menghentikan eksekusi lebih lanjut
     } else {
-        echo "Gagal membuat pesanan: " . $stmt->error;
+        echo json_encode(['error' => "Gagal membuat pesanan: " . $stmt->error]);
     }
 
     $stmt->close();
@@ -120,7 +161,7 @@ $conn->close();
 
         <div id="map"></div>
 
-        <form action="order.php" method="POST">
+        <form id="orderForm">
             <label for="service">Pilih Layanan:</label>
             <select id="service" name="service" required>
                 <option value="Belanja dan Pembelian">Belanja dan Pembelian</option>
@@ -136,10 +177,13 @@ $conn->close();
             <label for="instructions">Instruksi atau Pesan Tambahan:</label>
             <textarea id="instructions" name="instructions" rows="4" required></textarea>
 
+            <label for="gross_amount">Harga:</label>
+            <input type="number" id="gross_amount" name="gross_amount" value="50000" required>
+
             <input type="hidden" id="latitude" name="latitude">
             <input type="hidden" id="longitude" name="longitude">
             <label for="address">Alamat:</label>
-            <input type="text" id="address" name="address" required> <!-- Hapus readonly -->
+            <input type="text" id="address" name="address" required>
 
             <button type="submit">Pesan</button>
         </form>
@@ -151,6 +195,7 @@ $conn->close();
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-gWVLWvHL4VWGd-L7"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             var map = L.map('map').setView([-6.200000, 106.816666], 13);
@@ -194,6 +239,38 @@ $conn->close();
             marker.on('dragend', function (e) {
                 var latlng = marker.getLatLng();
                 updateAddress(latlng);
+            });
+
+            // Event listener untuk form submit
+            document.getElementById('orderForm').addEventListener('submit', function (e) {
+                e.preventDefault(); // Mencegah pengalihan halaman
+
+                // Ambil data dari form
+                var formData = new FormData(this);
+
+                // Kirim data ke server menggunakan fetch
+                fetch('order-a.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.snapToken) {
+                        // Jika token berhasil didapat, panggil pop-up Snap
+                        window.snap.pay(data.snapToken);
+                    } else {
+                        alert(data.error || 'Terjadi kesalahan saat memproses pesanan.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Gagal menghubungi server: ' + error.message);
+                });
             });
         });
     </script>
