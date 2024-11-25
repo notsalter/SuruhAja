@@ -249,7 +249,7 @@ $conn->close();
                 var formData = new FormData(this);
 
                 // Kirim data ke server menggunakan fetch
-                fetch('order-a.php', {
+                fetch('order.php', {
                     method: 'POST',
                     body: formData
                 })
