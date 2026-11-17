@@ -3,6 +3,7 @@ date_default_timezone_set('Asia/Jakarta');
 
 // Mulai sesi untuk autentikasi pengguna
 session_start();
+include 'csrf.php'; // CSRF utilities
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
@@ -22,6 +23,11 @@ $email = $_SESSION['email']; // Pastikan email disimpan dalam sesi saat login
 
 // Jika form disubmit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF protection
+    $csrf_token = $_POST['csrf_token'] ?? '';
+    if (!validate_csrf_token($csrf_token)) {
+        $error = "Invalid CSRF token";
+    } else {
     $service = $_POST['service'];
     $order_date = date('Y-m-d');
     $order_time = date('H:i:s');
@@ -84,6 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 }
 $conn->close();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -161,7 +169,7 @@ $conn->close();
 
         <div id="map"></div>
 
-        <form id="orderForm">
+        <form id="orderForm">\n            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
             <label for="service">Pilih Layanan:</label>
             <select id="service" name="service" required>
                 <option value="Belanja dan Pembelian">Belanja dan Pembelian</option>
