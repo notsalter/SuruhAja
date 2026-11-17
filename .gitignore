@@ -1,0 +1,9 @@
+# Dependency directories
+/vendor/
+composer.lock
+# IDE files
+/.idea/
+*.iml
+# OS files
+.DS_Store
+Thumbs.db
