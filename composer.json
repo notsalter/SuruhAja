@@ -1,5 +1,8 @@
 {
     "require": {
         "midtrans/midtrans-php": "^2.6"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
     }
 }
