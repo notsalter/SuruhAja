@@ -105,12 +105,15 @@ if ($order['driver_id']) {
                 <p><strong>Alamat:</strong> <?php echo htmlspecialchars($order['address']); ?></p>
                 <p><strong>Instruksi:</strong> <?php echo htmlspecialchars($order['instructions']); ?></p>
 
-                <?php if ($order['status'] !== 'Selesai'): ?>
-                    <form action="" method="POST">
-                        <input type="hidden" name="order_id" value="<?php echo $order_id; ?>">
-                        <button type="submit" name="complete_order" class="btn btn-primary">Selesaikan Pesanan</button>
-                    </form>
-                <?php endif; ?>
+                <?php if ($order['status'] === 'Proses'): ?>
+                                    <form action="cancel_order.php" method="POST" class="mt-2">
+                                        <input type="hidden" name="order_id" value="<?php echo $order_id; ?>">
+                                        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+                                        <button type="submit" name="cancel_order" class="btn btn-danger">Batalkan Pesanan</button>
+                                    </form>
+                                <?php elseif ($order['status'] !== 'Selesai'): ?>
+                                    <!-- Additional actions can be added here -->
+                                <?php endif; ?>
             </div>
         </div>
 
