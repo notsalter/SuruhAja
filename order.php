@@ -28,14 +28,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validate_csrf_token($csrf_token)) {
         $error = "Invalid CSRF token";
     } else {
-    $service = $_POST['service'];
-    $order_date = date('Y-m-d');
-    $order_time = date('H:i:s');
-    $instructions = $_POST['instructions'];
-    $latitude = $_POST['latitude'] ?? NULL;
-    $longitude = $_POST['longitude'] ?? NULL;
-    $address = $_POST['address'];
-    $gross_amount = $_POST['gross_amount']; // Ambil harga dari input
+    // Validate required fields
+    $required = ['service','instructions','address','gross_amount'];
+    foreach ($required as $field) {
+        if (empty($_POST[$field] ?? '')) {
+            $error = "Field $field is required";
+        }
+    }
+    if (!isset($error)) {
+        $service = $_POST['service'];
+        $order_date = date('Y-m-d');
+        $order_time = date('H:i:s');
+        $instructions = $_POST['instructions'];
+        $latitude = $_POST['latitude'] ?? NULL;
+        $longitude = $_POST['longitude'] ?? NULL;
+        $address = $_POST['address'];
+        $gross_amount = $_POST['gross_amount']; // Ambil harga dari input
+        if (!is_numeric($gross_amount) || $gross_amount <= 0) {
+            $error = "Invalid amount";
+        }
+    }
+    if (isset($error)) {
+        echo json_encode(['error' => $error]);
+        exit();
+    }
 
     // Simpan order ke database
     $stmt = $conn->prepare("INSERT INTO orders (user_id, service_name, order_date, order_time, instructions, latitude, longitude, address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Proses')");
@@ -89,9 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->close();
 }
-$conn->close();
-    }
 }
+$conn->close();
 ?>
 
 <!DOCTYPE html>
