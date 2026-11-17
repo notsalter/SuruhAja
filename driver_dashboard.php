@@ -67,6 +67,7 @@ $stmt->close();
                                                             <option value="Diterima" <?php if ($order['status'] === 'Diterima') echo 'selected'; ?>>Diterima</option>
                                                             <option value="Dalam Perjalanan" <?php if ($order['status'] === 'Dalam Perjalanan') echo 'selected'; ?>>Dalam Perjalanan</option>
                                                             <option value="Selesai" <?php if ($order['status'] === 'Selesai') echo 'selected'; ?>>Selesai</option>
+                                                            <option value="Batal" <?php if ($order['status'] === 'Batal') echo 'selected'; ?>>Batal</option>
                                                         </select>
                                                     </form>
                                                 <?php endif; ?>

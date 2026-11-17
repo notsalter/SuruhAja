@@ -32,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Define allowed forward transitions
     $transitions = [
         'Proses' => ['Diterima'],
-        'Diterima' => ['Dalam Perjalanan'],
-        'Dalam Perjalanan' => ['Selesai']
+        'Diterima' => ['Dalam Perjalanan', 'Batal'],
+        'Dalam Perjalanan' => ['Selesai', 'Batal']
     ];
     if (!isset($transitions[$current]) || !in_array($new_status, $transitions[$current], true)) {
         die('Invalid status transition');
