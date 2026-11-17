@@ -29,6 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $update = $conn->prepare('UPDATE orders SET status = "Batal" WHERE id = ?');
     $update->bind_param('i', $order_id);
     if ($update->execute()) {
+        // Notify admin of cancellation
+        $adminEmail = getenv('ADMIN_EMAIL');
+        if ($adminEmail) {
+            require_once 'notifications.php';
+            $subject = "Order #$order_id cancelled by customer";
+            $msg = "Customer ID $user_id cancelled order #$order_id which was in Proses status.";
+            send_status_email($adminEmail, $subject, $msg);
+        }
         header('Location: dashboard.php');
         exit();
     } else {
