@@ -1,0 +1,62 @@
+<?php
+include 'config.php';
+include 'csrf.php';
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRF check
+    $csrf_token = $_POST['csrf_token'] ?? '';
+    if (!validate_csrf_token($csrf_token)) {
+        $error = 'Invalid CSRF token';
+    } else {
+        $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+        if (!$email) {
+            $error = 'Invalid email address';
+        } else {
+            // Generate token
+            $token = bin2hex(random_bytes(32));
+            $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+            // Insert into password_resets
+            $stmt = $conn->prepare('INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)');
+            $stmt->bind_param('sss', $email, $token, $expires);
+            if ($stmt->execute()) {
+                // In real app, send email. Here we just show token.
+                $message = "Password reset token (valid for 1 hour): $token";
+            } else {
+                $error = 'Failed to create reset token';
+            }
+            $stmt->close();
+        }
+    }
+    $conn->close();
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reset Password</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h2 class="text-2xl font-bold mb-6 text-center">Reset Password</h2>
+        <?php if (isset($error)): ?>
+            <div class="mb-4 text-red-500"><?php echo $error; ?></div>
+        <?php elseif (isset($message)): ?>
+            <div class="mb-4 text-green-600"><?php echo $message; ?></div>
+        <?php endif; ?>
+        <form method="POST" action="reset_password.php">
+            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+            <div class="mb-4">
+                <label class="block text-gray-700">Email</label>
+                <input type="email" name="email" required class="mt-1 p-2 border border-gray-300 rounded w-full" />
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Send Reset Link</button>
+        </form>
+        <p class="mt-4 text-center"><a href="login.php" class="text-blue-500 hover:underline">Back to login</a></p>
+    </div>
+</div>
+</body>
+</html>

@@ -74,6 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Login</button>
             </form>
             <p class="mt-4 text-center">Belum memiliki akun? <a href="register.php" class="text-blue-500 hover:underline">Daftar</a></p>
+            <p class="mt-2 text-center"><a href="reset_password.php" class="text-blue-500 hover:underline">Lupa password?</a></p>
         </div>
     </div>
 </body>
