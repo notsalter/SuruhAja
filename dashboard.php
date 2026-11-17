@@ -78,7 +78,7 @@ $stmt->close();
 
         <h3>Riwayat Pesanan</h3>
         <?php if ($result->num_rows > 0): ?>
-            <table class="table table-striped">
+            <table class="table table-striped" id="ordersTable">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -91,12 +91,12 @@ $stmt->close();
                 </thead>
                 <tbody>
                     <?php $no = 1; while ($order = $result->fetch_assoc()): ?>
-                        <tr>
+                        <tr data-order-id="<?php echo $order['id']; ?>">
                             <td><?php echo $no++; ?></td>
                             <td><?php echo htmlspecialchars($order['service_name']); ?></td>
                             <td><?php echo htmlspecialchars($order['order_date']); ?></td>
                             <td><?php echo htmlspecialchars($order['order_time']); ?></td>
-                            <td><?php echo htmlspecialchars($order['status'] ?? 'Belum ada status'); ?></td>
+                            <td id="status-<?php echo $order['id']; ?>"><?php echo htmlspecialchars($order['status'] ?? 'Belum ada status'); ?></td>
                             <td>
                                 <a href="order_detail.php?id=<?php echo $order['id']; ?>" class="btn btn-info btn-sm">Lihat Detail</a>
                             </td>
@@ -114,5 +114,28 @@ $stmt->close();
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Poll order status every 10 seconds
+        function pollStatuses() {
+            const rows = document.querySelectorAll('tr[data-order-id]');
+            rows.forEach(row => {
+                const orderId = row.getAttribute('data-order-id');
+                fetch('order_status.php?order_id=' + orderId)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status) {
+                            const statusCell = document.getElementById('status-' + orderId);
+                            if (statusCell && statusCell.innerText !== data.status) {
+                                statusCell.innerText = data.status;
+                            }
+                        }
+                    })
+                    .catch(() => {});
+            });
+        }
+        setInterval(pollStatuses, 10000);
+        // Initial poll
+        pollStatuses();
+    </script>
 </body>
 </html>
