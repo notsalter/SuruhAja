@@ -1,0 +1,1 @@
+# SuruhAja\n\nA PHP-based project for ... (please fill in description).\n\n## Installation\n```bash\ncomposer install\n```\n\n## Usage\n\n*Add usage instructions here.*\n\n## Contributing\n\nPlease follow standard PHP coding style and submit pull requests.\n
