@@ -53,14 +53,22 @@ $stmt->close();
                         <td><?php echo $order['status']; ?></td>
                         <td>
                         <?php if (is_null($order['driver_id'])): ?>
-                            <form method=\"POST\" action=\"accept_order.php\" style=\"display:inline;\">
-                                <input type=\"hidden\" name=\"csrf_token\" value=\"<?php echo generate_csrf_token(); ?>\">
-                                <input type=\"hidden\" name=\"order_id\" value=\"<?php echo $order['id']; ?>\">
-                                <button class=\"btn btn-success btn-sm\" type=\"submit\">Accept</button>
-                            </form>
-                        <?php else: ?>
-                            Assigned
-                        <?php endif; ?>
+                                                    <form method="POST" action="accept_order.php" style="display:inline;">
+                                                        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+                                                        <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                                                        <button class="btn btn-success btn-sm" type="submit">Accept</button>
+                                                    </form>
+                                                <?php else: ?>
+                                                    <form method="POST" action="driver_update_status.php" style="display:inline;">
+                                                        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+                                                        <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                                                        <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                            <option value="Diterima" <?php if ($order['status'] === 'Diterima') echo 'selected'; ?>>Diterima</option>
+                                                            <option value="Dalam Perjalanan" <?php if ($order['status'] === 'Dalam Perjalanan') echo 'selected'; ?>>Dalam Perjalanan</option>
+                                                            <option value="Selesai" <?php if ($order['status'] === 'Selesai') echo 'selected'; ?>>Selesai</option>
+                                                        </select>
+                                                    </form>
+                                                <?php endif; ?>
                         </td>
                     </tr>
                 <?php endwhile; ?>
