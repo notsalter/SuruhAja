@@ -1,0 +1,1 @@
+ALTER TABLE orders ADD COLUMN payment_status ENUM('pending','paid','failed') NOT NULL DEFAULT 'pending';
