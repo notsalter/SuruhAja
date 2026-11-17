@@ -17,8 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
     // Mempersiapkan query untuk memasukkan data pengguna
-    $stmt = $conn->prepare("INSERT INTO users (name, email, phone, password) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $name, $email, $phone, $password);
+    $role = $_POST['role'] ?? 'customer';
+    $stmt = $conn->prepare("INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssss", $name, $email, $phone, $password, $role);
 
     if ($stmt->execute()) {
         $successMessage = "Registrasi berhasil! Anda sekarang bisa login.";
@@ -64,6 +65,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700">Password</label>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Daftar sebagai</label>
+                    <div class="flex space-x-4">
+                        <label><input type="radio" name="role" value="customer" checked class="mr-1"> Pelanggan</label>
+                        <label><input type="radio" name="role" value="driver" class="mr-1"> Driver</label>
+                    </div>
+                </div>
                     <input type="password" name="password" required class="mt-1 p-2 border border-gray-300 rounded w-full" />
                 </div>
                 <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Daftar</button>
