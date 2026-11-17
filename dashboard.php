@@ -8,13 +8,8 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Koneksi ke database
-$conn = new mysqli("localhost", "root", "Seychelles84", "suruhaja");
-
-// Cek koneksi
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
+// Load DB config via shared config
+include 'config.php';
 
 // Ambil user_id dari sesi
 $user_id = $_SESSION['user_id'];
@@ -22,13 +17,13 @@ $user_id = $_SESSION['user_id'];
 // Ambil riwayat pesanan dari database
 $sql = "SELECT id, service_name, order_date, order_time, status FROM orders WHERE user_id = ? ORDER BY order_date DESC";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param('i', $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Tutup koneksi database
+// Tutup statement (connection will be closed later by script end)
 $stmt->close();
-$conn->close();
+?>
 ?>
 <!DOCTYPE html>
 <html lang="id">
