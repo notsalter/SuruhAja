@@ -14,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $order_id = (int)($_POST['order_id'] ?? 0);
     $new_status = $_POST['status'] ?? '';
     $driver_id = $_SESSION['user_id'];
-    // Ensure the driver is assigned to this order
-    $stmt = $conn->prepare('SELECT driver_id FROM orders WHERE id = ?');
+    // Verify driver assignment and fetch current status
+    $stmt = $conn->prepare('SELECT driver_id, status FROM orders WHERE id = ?');
     $stmt->bind_param('i', $order_id);
     $stmt->execute();
     $res = $stmt->get_result();
@@ -24,10 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$order || $order['driver_id'] != $driver_id) {
         die('Unauthorized');
     }
-    // Allowed status transitions
-    $allowed = ['Diterima', 'Dalam Perjalanan', 'Selesai'];
-    if (!in_array($new_status, $allowed, true)) {
-        die('Invalid status');
+    $current = $order['status'];
+    // Define allowed forward transitions
+    $transitions = [
+        'Proses' => ['Diterima'],
+        'Diterima' => ['Dalam Perjalanan'],
+        'Dalam Perjalanan' => ['Selesai']
+    ];
+    if (!isset($transitions[$current]) || !in_array($new_status, $transitions[$current], true)) {
+        die('Invalid status transition');
     }
     $update = $conn->prepare('UPDATE orders SET status = ? WHERE id = ?');
     $update->bind_param('si', $new_status, $order_id);
