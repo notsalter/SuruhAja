@@ -1,10 +1,16 @@
 <?php
 include 'config.php'; // Sertakan koneksi database
+include 'csrf.php'; // CSRF utilities
 session_start();
 
 $successMessage = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // CSRF protection
+    $csrf_token = $_POST['csrf_token'] ?? '';
+    if (!validate_csrf_token($csrf_token)) {
+        $error = "Invalid CSRF token";
+    } else {
     $name = htmlspecialchars($_POST['name']);
     $email = htmlspecialchars($_POST['email']);
     $phone = htmlspecialchars($_POST['phone']);
@@ -23,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Tutup koneksi
     $stmt->close();
     $conn->close();
-}
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -39,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="bg-white p-8 rounded-lg shadow-lg">
             <h2 class="text-2xl font-bold mb-6 text-center">Daftar</h2>
             <form method="POST" action="register.php">
+                <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                 <?php if (isset($error)): ?>
                     <div class="mb-4 text-red-500"><?php echo $error; ?></div>
                 <?php endif; ?>
