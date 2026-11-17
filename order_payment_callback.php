@@ -1,6 +1,5 @@
 <?php
 include 'config.php';
-include 'csrf.php'; // not needed but kept for consistency
 session_start();
 // Midtrans will POST JSON to this endpoint
 $payload = @file_get_contents('php://input');
@@ -8,6 +7,18 @@ if (!$payload) {
     http_response_code(400);
     exit('No payload');
 }
+// Verify Midtrans signature if server key is set
+$server_key = getenv('MIDTRANS_SERVER_KEY');
+if ($server_key) {
+    $headers = getallheaders();
+    $signature = $headers['X-Signature'] ?? $headers['x-signature'] ?? '';
+    $expected = hash_hmac('sha512', $payload, $server_key);
+    if (!hash_equals($expected, $signature)) {
+        http_response_code(400);
+        exit('Invalid signature');
+    }
+}
+
 $data = json_decode($payload, true);
 if (!is_array($data)) {
     http_response_code(400);
