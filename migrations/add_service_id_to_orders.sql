@@ -1,0 +1,2 @@
+ALTER TABLE orders ADD COLUMN service_id INT NOT NULL AFTER user_id;
+ALTER TABLE orders ADD CONSTRAINT fk_service FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE RESTRICT;
