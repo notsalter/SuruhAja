@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Simpan order ke database
-    $stmt = $conn->prepare("INSERT INTO orders (user_id, service_id, order_date, order_time, instructions, latitude, longitude, address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Proses')");
+    $stmt = $conn->prepare("INSERT INTO orders (user_id, service_id, order_date, order_time, instructions, latitude, longitude, address, status, payment_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Proses', 'pending')");
     $stmt->bind_param("iisssdds", $user_id, $service_id, $order_date, $order_time, $instructions, $latitude, $longitude, $address);
 
     if ($stmt->execute()) {
