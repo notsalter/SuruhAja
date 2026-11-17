@@ -58,8 +58,8 @@ $is_logged_in = isset($_SESSION['username']);
                                     <li><a class="dropdown-item" href="profile.php">Profil</a></li>
                                     <li><a class="dropdown-item" href="dashboard.php">Dashboard</a></li>
                                     <li><a class="dropdown-item" href="logout.php">Logout</a></li>
-<?php if ($_SESSION['role'] === 'driver'): ?>
-    <li class="nav-item"><a class="nav-link" href="driver_dashboard.php">Driver Dashboard</a></li>
+<?php if ($_SESSION['role'] === 'admin'): ?>
+                            <li class="nav-item"><a class="nav-link" href="admin_services.php">Admin Services</a></li>
 <?php endif; ?>
                                 </ul>
                             </div>
