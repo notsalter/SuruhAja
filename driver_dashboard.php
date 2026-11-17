@@ -46,12 +46,12 @@ $stmt->close();
                 <thead><tr><th>ID</th><th>Layanan</th><th>Tanggal</th><th>Jam</th><th>Status</th><th>Aksi</th></tr></thead>
                 <tbody>
                 <?php while ($order = $result->fetch_assoc()): ?>
-                    <tr>
+                    <tr data-order-id="<?php echo $order['id']; ?>">
                         <td><?php echo $order['id']; ?></td>
                         <td><?php echo htmlspecialchars($order['service_name']); ?></td>
                         <td><?php echo $order['order_date']; ?></td>
                         <td><?php echo $order['order_time']; ?></td>
-                        <td><?php echo $order['status']; ?></td>
+                        <td id="status-<?php echo $order['id']; ?>"><?php echo $order['status']; ?></td>
                         <td>
                         <?php if (is_null($order['driver_id'])): ?>
                                                     <form method="POST" action="accept_order.php" style="display:inline;">
@@ -79,5 +79,26 @@ $stmt->close();
             <p>No orders available.</p>
         <?php endif; ?>
     </div>
+    <script>
+        async function pollStatuses() {
+            const rows = document.querySelectorAll('tr[data-order-id]');
+            for (const row of rows) {
+                const orderId = row.getAttribute('data-order-id');
+                try {
+                    const res = await fetch('order_status.php?order_id=' + orderId);
+                    if (!res.ok) continue;
+                    const data = await res.json();
+                    const statusCell = document.getElementById('status-' + orderId);
+                    if (statusCell && statusCell.innerText !== data.status) {
+                        statusCell.innerText = data.status;
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            }
+        }
+        setInterval(pollStatuses, 10000);
+        pollStatuses();
+    </script>
 </body>
 </html>
