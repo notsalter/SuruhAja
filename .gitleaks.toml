@@ -1,0 +1,6 @@
+[allowlist]
+    description = "Allowlist for Gitleaks"
+    regexes = []
+    paths = []
+    commits = []
+    stopwords = []

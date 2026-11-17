@@ -1,0 +1,39 @@
+name: SAST Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Gitleaks
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.18.1/gitleaks-linux-amd64 -o gitleaks
+          chmod +x gitleaks
+      - name: Run Gitleaks scan
+        run: ./gitleaks detect --no-git --source=. --config=.gitleaks.toml --redact --report-path=gitleaks-report.json
+      - name: Upload Gitleaks report
+        uses: actions/upload-artifact@v3
+        with:
+          name: gitleaks-report
+          path: gitleaks-report.json
+
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Semgrep
+        run: |
+          pip install semgrep
+      - name: Run Semgrep scan
+        run: semgrep --config .semgrep.yml --json -o semgrep-report.json
+      - name: Upload Semgrep report
+        uses: actions/upload-artifact@v3
+        with:
+          name: semgrep-report
+          path: semgrep-report.json

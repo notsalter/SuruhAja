@@ -1,0 +1,7 @@
+rules:
+  - id: php-hardcoded-credentials
+    patterns:
+      - pattern: "password = $VALUE"
+    message: "Potential hardcoded password"
+    languages: [php]
+    severity: WARNING
