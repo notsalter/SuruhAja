@@ -1,0 +1,1 @@
+ALTER TABLE orders MODIFY status ENUM('Proses','Diterima','Dalam Perjalanan','Selesai','Batal') NOT NULL DEFAULT 'Proses';
