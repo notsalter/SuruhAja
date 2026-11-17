@@ -1,7 +1,7 @@
-# SuruhAja – Gojek‑style Service Platform
+# SuruhAja – On‑Demand Service Platform
 
 ## Overview
-SuruhAja is a lightweight PHP/MySQL application that mimics core functionalities of on‑demand services such as Gojek or Astro. It supports three user roles:
+SuruhAja is a lightweight PHP/MySQL application that mimics core functionalities of on‑demand services. It supports three user roles:
 - **Customer** – can browse services, place orders, pay via Midtrans Snap, view order history, and rate drivers.
 - **Driver** – can accept orders, update status through the lifecycle (`Proses → Diterima → Dalam Perjalanan → Selesai`), or cancel (`Batal`).
 - **Admin** – full visibility of all orders, can change any order’s status, view analytics, and manage services.
