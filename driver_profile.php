@@ -33,6 +33,14 @@ $stmt->execute();
 $res = $stmt->get_result();
 $profile = $res->fetch_assoc();
 $stmt->close();
+// Fetch average rating for this driver
+$avg_stmt = $conn->prepare('SELECT AVG(rating) AS avg_rating FROM reviews WHERE driver_id = ?');
+$avg_stmt->bind_param('i', $user_id);
+$avg_stmt->execute();
+$avg_res = $avg_stmt->get_result();
+$avg_row = $avg_res->fetch_assoc();
+$average_rating = $avg_row['avg_rating'];
+$avg_stmt->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +51,7 @@ $stmt->close();
 </head>
 <body class="bg-gray-100">
 <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">Driver Profile</h1>
+    <h1 class="text-2xl font-bold mb-4">Driver Profile</h1>\n    <?php if ($average_rating !== null): ?>\n        <p class="mt-2">Average Rating: <?php echo number_format($average_rating, 2); ?> / 5</p>\n    <?php else: ?>\n        <p class="mt-2">No reviews yet.</p>\n    <?php endif; ?>
     <?php if (!empty($errors)): ?>
         <div class="bg-red-200 text-red-800 p-2 mb-4">
             <?php foreach ($errors as $e) echo htmlspecialchars($e) . '<br>'; ?>
