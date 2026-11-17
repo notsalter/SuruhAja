@@ -29,14 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Invalid CSRF token";
     } else {
     // Validate required fields
-    $required = ['service','instructions','address','gross_amount'];
+    $required = ['service_id','instructions','address','gross_amount'];
     foreach ($required as $field) {
         if (empty($_POST[$field] ?? '')) {
             $error = "Field $field is required";
         }
     }
     if (!isset($error)) {
-        $service = $_POST['service'];
+        $service_id = (int)($_POST['service_id'] ?? 0);
         $order_date = date('Y-m-d');
         $order_time = date('H:i:s');
         $instructions = $_POST['instructions'];
@@ -54,8 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Simpan order ke database
-    $stmt = $conn->prepare("INSERT INTO orders (user_id, service_name, order_date, order_time, instructions, latitude, longitude, address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Proses')");
-    $stmt->bind_param("issssdds", $user_id, $service, $order_date, $order_time, $instructions, $latitude, $longitude, $address);
+    $stmt = $conn->prepare("INSERT INTO orders (user_id, service_id, order_date, order_time, instructions, latitude, longitude, address, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Proses')");
+    $stmt->bind_param("iisssdds", $user_id, $service_id, $order_date, $order_time, $instructions, $latitude, $longitude, $address);
 
     if ($stmt->execute()) {
         // Ambil ID order yang baru saja dibuat
@@ -67,7 +67,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         \Midtrans\Config::$isProduction = false; // Set ke true jika Anda ingin menggunakan mode produksi
 
         // Buat transaksi
-        $transaction_details = [
+        // Get service name for item details
+$svc_name_stmt = $conn->prepare('SELECT name FROM services WHERE id = ?');
+$svc_name_stmt->bind_param('i', $service_id);
+$svc_name_stmt->execute();
+$svc_name_res = $svc_name_stmt->get_result();
+$service_name = $svc_name_res->fetch_assoc()['name'] ?? 'Service';
+$svc_name_stmt->close();
+$transaction_details = [
             'order_id' => $order_id,
             'gross_amount' => (int)$gross_amount, // Gunakan harga yang dikirim dari form
             'redirect_url' => 'dashboard.php' // Ganti dengan URL yang diinginkan
@@ -78,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'id' => 'item1',
                 'price' => (int)$gross_amount, // Gunakan harga yang dikirim dari form
                 'quantity' => 1,
-                'name' => $service,
+                'name' => $service_name,
             ],
         ];
 
@@ -185,11 +192,19 @@ $conn->close();
         <div id="map"></div>
 
         <form id="orderForm">\n            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
-            <label for="service">Pilih Layanan:</label>
-            <select id="service" name="service" required>
-                <option value="Belanja dan Pembelian">Belanja dan Pembelian</option>
-                <option value="Antar Jemput">Antar Jemput</option>
-            </select>
+<?php
+// Fetch services for dropdown
+$svc_stmt = $conn->prepare('SELECT id, name FROM services ORDER BY name');
+$svc_stmt->execute();
+$svc_res = $svc_stmt->get_result();
+?>
+<label for="service">Pilih Layanan:</label>
+<select id="service" name="service_id" required>
+<?php while ($svc = $svc_res->fetch_assoc()): ?>
+    <option value="<?php echo $svc['id']; ?>"><?php echo htmlspecialchars($svc['name']); ?></option>
+<?php endwhile; ?>
+</select>
+<?php $svc_stmt->close(); ?>
 
             <label for="order_date">Tanggal Pemesanan:</label>
             <input type="date" id="order_date" name="order_date" value="<?php echo date('Y-m-d'); ?>" required>
