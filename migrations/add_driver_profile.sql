@@ -1,0 +1,2 @@
+ALTER TABLE users ADD COLUMN vehicle VARCHAR(100) NULL AFTER role;
+ALTER TABLE users ADD COLUMN license_plate VARCHAR(50) NULL AFTER vehicle;
