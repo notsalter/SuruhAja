@@ -20,8 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $conn->prepare('INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)');
             $stmt->bind_param('sss', $email, $token, $expires);
             if ($stmt->execute()) {
-                // In real app, send email. Here we just show token.
-                $message = "Password reset token (valid for 1 hour): $token";
+                // Send reset email
+                require_once 'notifications.php';
+                $subject = "SuruhAja Password Reset";
+                $msg = "Your password reset token (valid for 1 hour): $token\nUse the following link to reset your password: https://yourdomain.com/reset_password_confirm.php?token=$token";
+                send_status_email($email, $subject, $msg);
+                $message = "Password reset email sent. Please check your inbox.";
             } else {
                 $error = 'Failed to create reset token';
             }
