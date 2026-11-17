@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN role ENUM('customer','driver','admin') NOT NULL DEFAULT 'customer';
