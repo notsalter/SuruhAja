@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_status = $_POST['status'] ?? '';
     $driver_id = $_SESSION['user_id'];
     // Verify driver assignment and fetch current status
-    $stmt = $conn->prepare('SELECT driver_id, status FROM orders WHERE id = ?');
+    $stmt = $conn->prepare('SELECT driver_id, status, payment_status FROM orders WHERE id = ?');
     $stmt->bind_param('i', $order_id);
     $stmt->execute();
     $res = $stmt->get_result();
@@ -25,6 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Unauthorized');
     }
     $current = $order['status'];
+    // Ensure payment is completed before driver can accept
+    if ($new_status === 'Diterima' && $order['payment_status'] !== 'paid') {
+        die('Cannot accept order: payment not completed');
+    }
     // Define allowed forward transitions
     $transitions = [
         'Proses' => ['Diterima'],
