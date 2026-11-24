@@ -24,6 +24,20 @@ $stmt->close();
     <meta charset="UTF-8">
     <title>My Orders - SuruhAja</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#683ce1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function (err) {
+            console.error('Service worker registration failed:', err);
+        });
+    });
+}
+</script>
 </head>
 <body class="bg-gray-100">
 <div class="container mx-auto p-4">

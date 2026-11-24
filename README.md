@@ -15,8 +15,8 @@ Key features implemented so far:
 - Driver profile showing vehicle info and average rating.
 - Admin dashboard and order management UI.
 - Email notifications on status changes (customer and admin actions).
-- Dockerfile for container deployment.
-- GitHub Actions CI workflow for PHP linting.
+- Progressive Web App: installable with manifest, icons, and offline shell (service worker).
+- Dockerfile and Docker Compose for container deployment.
 
 ## Setup
 1. **Clone the repository**

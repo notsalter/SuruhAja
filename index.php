@@ -23,6 +23,20 @@ $is_logged_in = isset($_SESSION['username']);
             font-size: 1rem;
         }
     </style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#683ce1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').catch(function (err) {
+            console.error('Service worker registration failed:', err);
+        });
+    });
+}
+</script>
 </head>
 
 <body>
